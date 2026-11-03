@@ -44,8 +44,15 @@ fn test_actual_cap_failures() {
 fn test_rights_exhaustive_8bit() {
     for x in 0u32..256 {
         let r = Rights::from_bits(x);
-        assert_eq!(r.masked().0, x & 0xff);
         assert_eq!(r.is_empty(), x == 0);
         assert_eq!(r.union(Rights::READ).contains(Rights::READ), true);
+    }
+    // RightsAmplification: any bit outside 0xff must be rejected by install.
+    for x in 0u32..256 {
+        let mut caps = CapTable::new();
+        let (obj, gen) = caps.create_object(1).unwrap();
+        let bad = Rights::from_bits(x | 0x100);
+        let cap = Cap { object: obj, generation: gen, rights: bad };
+        assert!(caps.install(0, cap).is_err());
     }
 }
