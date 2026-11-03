@@ -1,0 +1,24 @@
+name: crux-mir-native-x86
+
+# Native x86_64 runner required. Apple Silicon + Rosetta is NOT supported:
+# rustc SIGSEGV under Rosetta (see reports/crux-simple.log).
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'formal/crux/**'
+      - '.github/workflows/crux-mir.yml'
+
+jobs:
+  crux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crux-MIR (native x86_64 only)
+        run: |
+          docker pull ghcr.io/galoisinc/crux-mir:0.12
+          docker run --rm \
+            -v "$PWD/formal/crux:/work:rw" -w /work \
+            ghcr.io/galoisinc/crux-mir:0.12 \
+            crux-mir /work/simple.rs
