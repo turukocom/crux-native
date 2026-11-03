@@ -50,6 +50,9 @@ pub type Generation = u16;
 pub struct Rights(u32);
 
 impl Rights {
+    // Snapshot test helper (not present in the real TCB source).
+    pub const fn from_bits(x: u32) -> Self { Self(x) }
+
     /// Okuma hakkı. Bit 0, değer `0x01`.
     pub const READ: Self = Self(1 << 0);
     /// Yazma hakkı. Bit 1, değer `0x02`.
