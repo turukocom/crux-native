@@ -129,3 +129,20 @@ fn test_symbolic_install_lookup_success() {
         assert!(caps.install(slot, cap).is_err());
     }
 }
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_derive_subset() {
+    let mask = u32::symbolic("dmask");
+    let mut caps = CapTable::new();
+    let (obj, gen) = caps.create_object(1).unwrap();
+    let src_rights = Rights::READ.union(Rights::GRANT);
+    caps.install(0, Cap { object: obj, generation: gen, rights: src_rights }).unwrap();
+
+    let m = Rights::from_bits(mask);
+    if mask & !src_rights.bits() == 0 && mask != 0 {
+        assert!(caps.derive(0, 1, m).is_ok());
+        assert!(caps.lookup(1, m).is_ok());
+    } else {
+        assert!(caps.derive(0, 1, m).is_err());
+    }
+}
