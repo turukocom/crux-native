@@ -1,5 +1,6 @@
-pub mod tcb_rights;
-use tcb_rights::Rights;
+#[path = "tcb_cap.rs"]
+pub mod cap;
+use cap::{Cap, CapTable, Rights};
 
 #[cfg_attr(crux, crux::test)]
 fn test_add_one() {
@@ -7,10 +8,15 @@ fn test_add_one() {
 }
 
 #[cfg_attr(crux, crux::test)]
-fn test_tcb_rights() {
-    assert_eq!(Rights::empty().contains(Rights::empty()), true);
+fn test_actual_cap_smoke() {
+    let mut caps = CapTable::new();
+    let (obj, gen) = caps.create_object(1).unwrap();
+    assert_eq!(obj, 0);
+    assert_eq!(gen, 1);
+    caps.install(0, Cap { object: obj, generation: gen, rights: Rights::READ })
+        .unwrap();
+    let c = caps.lookup(0, Rights::READ).unwrap();
+    assert_eq!(c.object, 0);
+    assert_eq!(c.generation, 1);
     assert_eq!(Rights::READ.union(Rights::WRITE).contains(Rights::READ), true);
-    assert_eq!(Rights::ALL.contains(Rights::MANAGE), true);
-    assert_eq!(Rights::READ.is_empty(), false);
-    assert_eq!(Rights::masked(Rights(0x1ff)).0, 0xff);
 }
