@@ -1,0 +1,34 @@
+name: crux-adversarial-mutation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'formal/crux-adversarial/**'
+      - '.github/workflows/crux-adversarial.yml'
+
+jobs:
+  mutation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crux must disprove false invariant
+        run: |
+          docker pull ghcr.io/galoisinc/crux-mir:0.12
+          set +e
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -e HOME=/tmp -e RUSTUP_HOME=/home/crux-mir/.rustup -e CARGO_HOME=/tmp/cargo \
+            -e CRUX_RUST_LIBRARY_PATH=/crux-mir/rlibs \
+            -e PATH=/home/crux-mir/.cargo/bin:/usr/local/bin:/usr/bin:/bin \
+            -v "$PWD/formal/crux-adversarial:/work:rw" -w /work \
+            --entrypoint /bin/sh \
+            ghcr.io/galoisinc/crux-mir:0.12 -c 'cargo crux-test --lib' > /tmp/adv.log 2>&1
+          rc=$?
+          cat /tmp/adv.log
+          if grep -q 'Disproved: 1' /tmp/adv.log; then
+            echo 'ADVERSARIAL MUTATION DETECTED: PASS'
+            exit 0
+          fi
+          echo 'FAIL: mutation not detected'
+          exit 1
