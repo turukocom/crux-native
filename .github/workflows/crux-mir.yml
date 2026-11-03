@@ -27,4 +27,4 @@ jobs:
           docker pull ghcr.io/galoisinc/crux-mir:0.12
           docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
             -v "$PWD/formal/crux:/work:rw" -w /work \
-            ghcr.io/galoisinc/crux-mir:0.12 /usr/local/bin/crux-mir /work/simple.mir
+            ghcr.io/galoisinc/crux-mir:0.12 /usr/local/bin/crux-mir /work/libsimple.mir
