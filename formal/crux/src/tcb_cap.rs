@@ -272,9 +272,9 @@ impl CapTable {
     /// - [`CapError::SlotOccupied`]: hedef yuva dolu.
     #[inline(never)]
     pub fn derive(&mut self, src: u16, dst: u16, mask: Rights) -> Result<Cap, CapError> {
-        let src = core::hint::black_box(src);
-        let dst = core::hint::black_box(dst);
-        let mask = core::hint::black_box(mask);
+        let src = src;
+        let dst = dst;
+        let mask = mask;
         let source = self.lookup(src, Rights::empty())?;
         if dst as usize >= MAX_SLOTS {
             return Err(CapError::InvalidSlot);
@@ -313,7 +313,7 @@ impl CapTable {
     /// - [`CapError::NoRights`]: istenen haklar yetenekte yok.
     #[inline(never)]
     pub fn lookup(&self, slot: u16, required: Rights) -> Result<Cap, CapError> {
-        let slot = core::hint::black_box(slot);
+        let slot = slot;
         if slot as usize >= MAX_SLOTS {
             return Err(CapError::InvalidSlot);
         }
