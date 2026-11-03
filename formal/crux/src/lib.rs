@@ -38,3 +38,14 @@ fn test_actual_cap_failures() {
     assert_eq!(gen0, 1);
     assert!(caps.create_object(1).is_err());
 }
+
+
+#[cfg_attr(crux, crux::test)]
+fn test_rights_exhaustive_8bit() {
+    for x in 0u32..256 {
+        let r = Rights::from_bits(x);
+        assert_eq!(r.masked().0, x & 0xff);
+        assert_eq!(r.is_empty(), x == 0);
+        assert_eq!(r.union(Rights::READ).contains(Rights::READ), true);
+    }
+}
