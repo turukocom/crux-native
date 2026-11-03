@@ -69,3 +69,16 @@ fn test_symbolic_rights_contains() {
     let rb = Rights::from_bits(b);
     assert_eq!(ra.contains(rb), (a & b) == b);
 }
+
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_rights_laws() {
+    let a = u32::symbolic("la");
+    let b = u32::symbolic("lb");
+    let ra = Rights::from_bits(a);
+    let rb = Rights::from_bits(b);
+    assert_eq!(ra.union(rb).contains(ra), true);
+    assert_eq!(ra.union(rb).contains(rb), true);
+    assert_eq!(ra.is_empty(), a == 0);
+    assert_eq!(ra.masked_bits(), a & 0xff);
+}
