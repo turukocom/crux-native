@@ -82,3 +82,29 @@ fn test_symbolic_rights_laws() {
     assert_eq!(ra.is_empty(), a == 0);
     assert_eq!(ra.masked_bits(), a & 0xff);
 }
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_lookup_empty_table() {
+    let slot = u16::symbolic("slot");
+    let req = u32::symbolic("req");
+    let caps = CapTable::new();
+    assert!(caps.lookup(slot, Rights::from_bits(req)).is_err());
+}
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_create_object_empty() {
+    let kind = u8::symbolic("kind");
+    let mut caps = CapTable::new();
+    let (obj, gen) = caps.create_object(kind).unwrap();
+    assert_eq!(obj, 0);
+    assert_eq!(gen, 1);
+}
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_install_dead_object() {
+    let slot = u16::symbolic("islot");
+    let rights = u32::symbolic("irights");
+    let mut caps = CapTable::new();
+    let cap = Cap { object: 0, generation: 1, rights: Rights::from_bits(rights) };
+    assert!(caps.install(slot, cap).is_err());
+}
