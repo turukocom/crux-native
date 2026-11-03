@@ -1,3 +1,6 @@
+extern crate crucible;
+use crucible::Symbolic;
+
 #[path = "tcb_cap.rs"]
 pub mod cap;
 use cap::{Cap, CapTable, Rights};
@@ -55,4 +58,14 @@ fn test_rights_exhaustive_8bit() {
         let cap = Cap { object: obj, generation: gen, rights: bad };
         assert!(caps.install(0, cap).is_err());
     }
+}
+
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_rights_contains() {
+    let a = u32::symbolic("a");
+    let b = u32::symbolic("b");
+    let ra = Rights::from_bits(a);
+    let rb = Rights::from_bits(b);
+    assert_eq!(ra.contains(rb), (a & b) == b);
 }

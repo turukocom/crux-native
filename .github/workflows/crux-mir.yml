@@ -20,6 +20,7 @@ jobs:
           docker run --rm --user "$(id -u):$(id -g)" \
             -e HOME=/tmp -e RUSTUP_HOME=/home/crux-mir/.rustup -e CARGO_HOME=/tmp/cargo \
             -e CRUX_RUST_LIBRARY_PATH=/crux-mir/rlibs \
+            -e RUSTFLAGS='--extern crucible=/crux-mir/rlibs/libcrucible.rlib' \
             -e PATH=/home/crux-mir/.cargo/bin:/usr/local/bin:/usr/bin:/bin \
             -v "$PWD/formal/crux:/work:rw" -w /work \
             --entrypoint /bin/sh \
