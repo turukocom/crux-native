@@ -108,3 +108,24 @@ fn test_symbolic_install_dead_object() {
     let cap = Cap { object: 0, generation: 1, rights: Rights::from_bits(rights) };
     assert!(caps.install(slot, cap).is_err());
 }
+
+#[cfg_attr(crux, crux::test)]
+fn test_symbolic_install_lookup_success() {
+    let slot = u16::symbolic("vslot");
+    let rights = u32::symbolic("vrights");
+    let mut caps = CapTable::new();
+    let (obj, gen) = caps.create_object(1).unwrap();
+    let r = Rights::from_bits(rights);
+    let cap = Cap { object: obj, generation: gen, rights: r };
+
+    if slot < 64 {
+        if rights & !0xff == 0 {
+            assert!(caps.install(slot, cap).is_ok());
+            assert!(caps.lookup(slot, r).is_ok());
+        } else {
+            assert!(caps.install(slot, cap).is_err());
+        }
+    } else {
+        assert!(caps.install(slot, cap).is_err());
+    }
+}
